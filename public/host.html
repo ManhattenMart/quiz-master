@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quiz Master — Host</title>
+<link rel="stylesheet" href="shared.css" />
+</head>
+<body>
+
+<!-- SETUP SCREEN -->
+<div class="center-screen" id="screen-setup">
+  <div class="card" style="max-width:520px; width:100%;">
+    <div class="brand">🎬 Quiz Master <span class="dot">Host</span></div>
+    <p class="muted">Pick a quiz to run. Friends join with a code on the player page.</p>
+    <div class="col">
+      <select id="quiz-select"></select>
+      <div id="quiz-summary" class="muted small"></div>
+      <button id="btn-create">Create Game</button>
+      <a href="builder.html" style="text-align:center;">
+        <button class="ghost" style="width:100%;">+ Add / Edit Questions</button>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- LOBBY SCREEN -->
+<div class="wrap" id="screen-lobby" style="display:none;">
+  <div class="card">
+    <div class="title-row">
+      <div class="brand">🎬 <span id="lobby-quiz-title"></span></div>
+      <div class="pill" id="lobby-count">0 players</div>
+    </div>
+    <p class="muted">Ask friends to open the player link and enter this code:</p>
+    <div class="game-code" id="game-code">----</div>
+    <p class="qr-hint muted small" id="player-url"></p>
+    <ul class="player-list" id="lobby-players" style="margin-top:20px;"></ul>
+    <div class="row" style="margin-top:24px; justify-content:flex-end;">
+      <button id="btn-start" disabled>Start Game</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME SCREEN -->
+<div class="wrap" id="screen-game" style="display:none;">
+  <div class="card">
+    <div class="title-row">
+      <div class="pill" id="round-pill">Round</div>
+      <div class="pill" id="progress-pill">Q1/1</div>
+      <div class="pill" id="answer-count-pill">0/0 answered</div>
+    </div>
+
+    <h2 id="q-text">Question text</h2>
+    <div class="media-box" id="media-box" style="display:none;"></div>
+
+    <div class="timer-bar"><div class="timer-bar-fill" id="timer-fill" style="width:100%;"></div></div>
+
+    <div class="options-grid" id="options-grid"></div>
+
+    <div class="row" style="margin-top:24px; justify-content:flex-end; gap:10px;">
+      <button class="secondary" id="btn-lock">Lock Answers</button>
+      <button id="btn-reveal">Reveal Answer</button>
+      <button class="secondary" id="btn-next" style="display:none;">Next ▶</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <h3>Leaderboard</h3>
+    <ul class="player-list" id="game-players"></ul>
+  </div>
+</div>
+
+<!-- LEADERBOARD SCREEN -->
+<div class="wrap" id="screen-leaderboard" style="display:none;">
+  <div class="card">
+    <h2>Leaderboard</h2>
+    <ul class="player-list" id="board-players"></ul>
+    <div class="row" style="margin-top:24px; justify-content:flex-end;">
+      <button id="btn-continue">Continue ▶</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME OVER SCREEN -->
+<div class="center-screen" id="screen-over" style="display:none;">
+  <div class="card" style="max-width:560px; width:100%;">
+    <h1>🏆 Final Results</h1>
+    <ul class="player-list" id="final-players"></ul>
+    <div class="row" style="margin-top:24px; justify-content:flex-end;">
+      <button class="secondary" onclick="location.reload()">New Game</button>
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="host.js"></script>
+</body>
+</html>

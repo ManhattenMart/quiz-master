@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quiz Master — Play</title>
+<link rel="stylesheet" href="shared.css" />
+</head>
+<body>
+
+<!-- JOIN SCREEN -->
+<div class="center-screen" id="screen-join">
+  <div class="card" style="max-width:420px; width:100%;">
+    <div class="brand">🎬 Quiz Master</div>
+    <p class="muted">Enter the game code your host gave you.</p>
+    <div class="col">
+      <input id="input-code" placeholder="CODE" maxlength="4" style="text-transform:uppercase; text-align:center; font-size:28px; letter-spacing:6px;" />
+      <input id="input-name" placeholder="Your name" maxlength="24" />
+      <button id="btn-join">Join Game</button>
+      <div id="join-error" class="small" style="color:var(--bad);"></div>
+    </div>
+  </div>
+</div>
+
+<!-- WAITING SCREEN -->
+<div class="center-screen" id="screen-waiting" style="display:none;">
+  <div class="card" style="max-width:420px; width:100%; text-align:center;">
+    <h2 id="waiting-title">You're in!</h2>
+    <p class="muted">Sit tight — the host will start the game shortly.</p>
+    <div class="pill" id="my-score-pill">0 points</div>
+  </div>
+</div>
+
+<!-- QUESTION SCREEN -->
+<div class="wrap" id="screen-question" style="display:none;">
+  <div class="card">
+    <div class="title-row">
+      <div class="pill" id="p-round-pill">Round</div>
+      <div class="pill" id="p-progress-pill">Q1/1</div>
+      <div class="pill" id="p-score-pill">0 points</div>
+    </div>
+    <h2 id="p-q-text">Question</h2>
+    <div class="media-box" id="p-media-box" style="display:none;"></div>
+    <div class="timer-bar"><div class="timer-bar-fill" id="p-timer-fill" style="width:100%;"></div></div>
+
+    <div class="options-grid" id="p-options-grid"></div>
+    <div id="p-text-answer-wrap" style="display:none; margin-top:16px;" class="col">
+      <input id="p-text-answer" placeholder="Type your answer" />
+      <button id="p-submit-text">Submit</button>
+    </div>
+
+    <div id="p-status" class="muted" style="margin-top:16px;"></div>
+  </div>
+</div>
+
+<!-- REVEAL SCREEN -->
+<div class="center-screen" id="screen-reveal" style="display:none;">
+  <div class="card" style="max-width:420px; width:100%; text-align:center;">
+    <h2 id="reveal-heading">Correct!</h2>
+    <p id="reveal-points" class="muted"></p>
+    <div class="pill" id="reveal-score-pill">0 points</div>
+  </div>
+</div>
+
+<!-- LEADERBOARD SCREEN -->
+<div class="wrap" id="screen-leaderboard" style="display:none;">
+  <div class="card">
+    <h2>Leaderboard</h2>
+    <ul class="player-list" id="board-players"></ul>
+  </div>
+</div>
+
+<!-- GAME OVER SCREEN -->
+<div class="center-screen" id="screen-over" style="display:none;">
+  <div class="card" style="max-width:420px; width:100%; text-align:center;">
+    <h1>🏁 Final Results</h1>
+    <ul class="player-list" id="final-players" style="text-align:left;"></ul>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="player.js"></script>
+</body>
+</html>
