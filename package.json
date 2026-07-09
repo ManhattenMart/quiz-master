@@ -1,0 +1,16 @@
+{
+    "name": "quiz-master",
+        "version": "1.0.0",
+        "description": "Host-your-own live quiz app with music rounds, film clip rounds, and a shareable online answer/scoring system for friends.",
+        "main": "app.js",
+        "engines": {
+          "node": ">=18"
+    },
+  "scripts": {
+        "start": "node app.js"
+  },
+  "dependencies": {
+        "express": "^4.19.2",
+              "socket.io": "^4.7.5"
+  }
+}
