@@ -1,0 +1,99 @@
+{
+  "title": "Friday Night Quiz",
+  "rounds": [
+    {
+      "name": "General Knowledge",
+      "type": "standard",
+      "questions": [
+        {
+          "type": "mc",
+          "text": "What is the capital of Australia?",
+          "options": ["Sydney", "Melbourne", "Canberra", "Perth"],
+          "correctAnswer": "Canberra",
+          "points": 1000,
+          "timeLimit": 20
+        },
+        {
+          "type": "text",
+          "text": "What is the largest planet in our solar system?",
+          "correctAnswer": "Jupiter",
+          "points": 1000,
+          "timeLimit": 20
+        },
+        {
+          "type": "mc",
+          "text": "How many strings does a standard violin have?",
+          "options": ["3", "4", "5", "6"],
+          "correctAnswer": "4",
+          "points": 1000,
+          "timeLimit": 15
+        }
+      ]
+    },
+    {
+      "name": "Music Round: Name That Tune",
+      "type": "music",
+      "questions": [
+        {
+          "type": "text",
+          "text": "Name this song",
+          "acceptedAnswers": ["bohemian rhapsody"],
+          "correctAnswer": "Bohemian Rhapsody - Queen",
+          "points": 1500,
+          "timeLimit": 30,
+          "media": {
+            "type": "youtube",
+            "url": "https://www.youtube.com/watch?v=fJ9rUzIMcZQ",
+            "start": 0,
+            "note": "Replace with your own clip. 'start' is seconds into the video."
+          }
+        },
+        {
+          "type": "mc",
+          "text": "Name the artist of this clip",
+          "options": ["Queen", "The Beatles", "Fleetwood Mac", "Led Zeppelin"],
+          "correctAnswer": "Queen",
+          "points": 1000,
+          "timeLimit": 25,
+          "media": {
+            "type": "youtube",
+            "url": "https://www.youtube.com/watch?v=fJ9rUzIMcZQ",
+            "start": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "Film Clips",
+      "type": "film",
+      "questions": [
+        {
+          "type": "mc",
+          "text": "Name this film",
+          "options": ["Inception", "The Matrix", "Interstellar", "Tenet"],
+          "correctAnswer": "Inception",
+          "points": 1000,
+          "timeLimit": 25,
+          "media": {
+            "type": "youtube",
+            "url": "https://www.youtube.com/watch?v=YoHD9XEInc0",
+            "start": 5,
+            "note": "Replace with your own clip/trailer link."
+          }
+        },
+        {
+          "type": "text",
+          "text": "Name the director of this film",
+          "correctAnswer": "Christopher Nolan",
+          "points": 1500,
+          "timeLimit": 25,
+          "media": {
+            "type": "youtube",
+            "url": "https://www.youtube.com/watch?v=YoHD9XEInc0",
+            "start": 5
+          }
+        }
+      ]
+    }
+  ]
+}
