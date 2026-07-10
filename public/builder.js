@@ -238,17 +238,28 @@ function renderQuestion(round, ri, q, qi) {
     const mediaField = document.createElement('div');
     mediaField.className = 'field';
     const label = round.type === 'music' ? 'Song clip' : 'Film clip';
+    const urlHints = {
+      youtube: 'Paste any YouTube link',
+      spotify: 'Paste a Spotify track/playlist/album link (from Share)',
+      amazon: 'Paste the Amazon Music embed link (Share → Embed Player, use the src URL)',
+      audio: 'Paste a direct link to an mp3/wav file',
+      video: 'Paste a direct link to an mp4 file',
+    };
     mediaField.innerHTML = `
-      <label class="field-label">${label} — paste a YouTube link, or a direct audio/video file URL</label>
+      <label class="field-label">${label}</label>
       <div class="row">
-        <select data-media-type style="width:120px;">
+        <select data-media-type style="width:150px;">
           <option value="youtube" ${q.media.type === 'youtube' ? 'selected' : ''}>YouTube</option>
+          <option value="spotify" ${q.media.type === 'spotify' ? 'selected' : ''}>Spotify</option>
+          <option value="amazon" ${q.media.type === 'amazon' ? 'selected' : ''}>Amazon Music</option>
           <option value="audio" ${q.media.type === 'audio' ? 'selected' : ''}>Audio file</option>
           <option value="video" ${q.media.type === 'video' ? 'selected' : ''}>Video file</option>
         </select>
-        <input data-media-url style="flex:1;" placeholder="https://..." value="${escapeAttr(q.media.url)}" />
+        <input data-media-url style="flex:1;" placeholder="${urlHints[q.media.type] || 'https://...'}" value="${escapeAttr(q.media.url)}" />
         ${q.media.type === 'youtube' ? `<input data-media-start type="number" min="0" style="width:90px;" placeholder="Start (s)" value="${q.media.start || 0}" />` : ''}
-      </div>`;
+      </div>
+      ${q.media.type === 'spotify' ? '<p class="muted small" style="margin-top:6px;">Players hear the full track only if they\'re logged into Spotify in that browser — otherwise a 30-second preview plays.</p>' : ''}
+      ${q.media.type === 'amazon' ? '<p class="muted small" style="margin-top:6px;">In Amazon Music: open the song, click ⋯ → Share → Embed Player, then paste the "src" URL from that code here (not the regular share link).</p>' : ''}`;
     mediaField.querySelector('[data-media-type]').addEventListener('change', (e) => { q.media.type = e.target.value; renderRounds(); });
     mediaField.querySelector('[data-media-url]').addEventListener('input', (e) => { q.media.url = e.target.value; });
     const startInput = mediaField.querySelector('[data-media-start]');

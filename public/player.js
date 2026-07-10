@@ -130,6 +130,22 @@ function renderMedia(media) {
     iframe.allow = 'autoplay; encrypted-media';
     iframe.allowFullscreen = true;
     box.appendChild(iframe);
+  } else if (media.type === 'spotify') {
+    const iframe = document.createElement('iframe');
+    iframe.width = '100%';
+    iframe.height = '152';
+    iframe.src = extractSpotifyEmbedUrl(media.url);
+    iframe.frameBorder = '0';
+    iframe.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
+    box.appendChild(iframe);
+  } else if (media.type === 'amazon') {
+    const iframe = document.createElement('iframe');
+    iframe.width = '100%';
+    iframe.height = '300';
+    iframe.src = media.url;
+    iframe.frameBorder = '0';
+    iframe.style.border = '1px solid rgba(0,0,0,0.12)';
+    box.appendChild(iframe);
   } else if (media.type === 'audio') {
     const audio = document.createElement('audio');
     audio.src = media.url;
@@ -148,6 +164,14 @@ function renderMedia(media) {
 function extractYouTubeId(url) {
   const m = url.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{6,})/);
   return m ? m[1] : url;
+}
+
+function extractSpotifyEmbedUrl(url) {
+  if (!url) return '';
+  if (url.includes('/embed/')) return url.split('?')[0];
+  const m = url.match(/open\.spotify\.com\/(track|album|playlist|episode|show)\/([A-Za-z0-9]+)/);
+  if (m) return `https://open.spotify.com/embed/${m[1]}/${m[2]}`;
+  return url;
 }
 
 function submitAnswer(answer, btnEl) {
