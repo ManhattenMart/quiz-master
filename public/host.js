@@ -86,7 +86,7 @@ socket.on('state:question', (q) => {
   el('progress-pill').textContent = `Q${q.questionNumber}/${q.totalQuestions}`;
   el('answer-count-pill').textContent = `0 answered`;
   el('q-text').textContent = q.text;
-  renderMedia(q.media);
+  renderMedia(q.media, q.roundType);
 
   const grid = el('options-grid');
   grid.innerHTML = '';
@@ -126,7 +126,7 @@ function startTimerBar(timeLimit, startedAt) {
   }, 100);
 }
 
-function renderMedia(media) {
+function renderMedia(media, roundType) {
   const box = el('media-box');
   box.innerHTML = '';
   if (!media) {
@@ -134,46 +134,95 @@ function renderMedia(media) {
     return;
   }
   box.style.display = '';
+
+  // Music rounds hide the title/artist by default on the host screen too —
+  // if you're screen-sharing during the call, anyone watching would otherwise
+  // see the answer on your shared screen even though players' own screens hide
+  // it. A "Peek" button lets you glance at it privately if you need to confirm
+  // the right clip loaded; click it again to hide.
+  const blind = roundType === 'music';
+  const mediaWrap = document.createElement('div');
+
+  let mediaEl = null;
   if (media.type === 'youtube') {
     const id = extractYouTubeId(media.url);
     const start = media.start || 0;
-    const iframe = document.createElement('iframe');
-    iframe.width = '100%';
-    iframe.height = '400';
-    iframe.src = `https://www.youtube.com/embed/${id}?start=${start}&autoplay=1`;
-    iframe.frameBorder = '0';
-    iframe.allow = 'autoplay; encrypted-media';
-    iframe.allowFullscreen = true;
-    box.appendChild(iframe);
+    mediaEl = document.createElement('iframe');
+    mediaEl.width = '100%';
+    mediaEl.height = '400';
+    mediaEl.src = `https://www.youtube.com/embed/${id}?start=${start}&autoplay=1`;
+    mediaEl.frameBorder = '0';
+    mediaEl.allow = 'autoplay; encrypted-media';
+    mediaEl.allowFullscreen = true;
   } else if (media.type === 'spotify') {
-    const iframe = document.createElement('iframe');
-    iframe.width = '100%';
-    iframe.height = '152';
-    iframe.src = extractSpotifyEmbedUrl(media.url);
-    iframe.frameBorder = '0';
-    iframe.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
-    box.appendChild(iframe);
+    mediaEl = document.createElement('iframe');
+    mediaEl.width = '100%';
+    mediaEl.height = '152';
+    mediaEl.src = extractSpotifyEmbedUrl(media.url);
+    mediaEl.frameBorder = '0';
+    mediaEl.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
   } else if (media.type === 'amazon') {
-    const iframe = document.createElement('iframe');
-    iframe.width = '100%';
-    iframe.height = '400';
-    iframe.src = media.url;
-    iframe.frameBorder = '0';
-    iframe.style.border = '1px solid rgba(0,0,0,0.12)';
-    box.appendChild(iframe);
+    mediaEl = document.createElement('iframe');
+    mediaEl.width = '100%';
+    mediaEl.height = '400';
+    mediaEl.src = media.url;
+    mediaEl.frameBorder = '0';
+    mediaEl.style.border = '1px solid rgba(0,0,0,0.12)';
   } else if (media.type === 'audio') {
-    const audio = document.createElement('audio');
-    audio.src = media.url;
-    audio.controls = true;
-    audio.autoplay = true;
-    box.appendChild(audio);
+    mediaEl = document.createElement('audio');
+    mediaEl.src = media.url;
+    mediaEl.controls = !blind;
+    mediaEl.autoplay = true;
   } else if (media.type === 'video') {
-    const video = document.createElement('video');
-    video.src = media.url;
-    video.controls = true;
-    video.autoplay = true;
-    box.appendChild(video);
+    mediaEl = document.createElement('video');
+    mediaEl.src = media.url;
+    mediaEl.controls = true;
+    mediaEl.autoplay = true;
+    mediaEl.width = '100%';
   }
+
+  if (mediaEl) mediaWrap.appendChild(mediaEl);
+
+  if (!blind) {
+    box.appendChild(mediaWrap);
+    return;
+  }
+
+  // Blind (music round): keep the real player off-screen but playing, show a
+  // placeholder plus a Peek toggle instead.
+  mediaWrap.style.position = 'absolute';
+  mediaWrap.style.width = '1px';
+  mediaWrap.style.height = '1px';
+  mediaWrap.style.overflow = 'hidden';
+  mediaWrap.style.opacity = '0.01';
+  box.appendChild(mediaWrap);
+
+  const placeholder = document.createElement('div');
+  placeholder.className = 'now-playing';
+  placeholder.innerHTML = `
+    <div class="eq"><span></span><span></span><span></span><span></span></div>
+    <div class="muted" style="margin-top:12px;">Hidden from your screen too — playing for everyone</div>
+    <button class="ghost small" style="margin-top:14px;" id="btn-peek-media">Peek (only if you're not sharing this)</button>`;
+  box.appendChild(placeholder);
+
+  placeholder.querySelector('#btn-peek-media').addEventListener('click', () => {
+    const revealed = mediaWrap.style.opacity !== '1';
+    if (revealed) {
+      mediaWrap.style.position = '';
+      mediaWrap.style.width = '';
+      mediaWrap.style.height = '';
+      mediaWrap.style.overflow = '';
+      mediaWrap.style.opacity = '1';
+      placeholder.style.display = 'none';
+    } else {
+      mediaWrap.style.position = 'absolute';
+      mediaWrap.style.width = '1px';
+      mediaWrap.style.height = '1px';
+      mediaWrap.style.overflow = 'hidden';
+      mediaWrap.style.opacity = '0.01';
+      placeholder.style.display = '';
+    }
+  });
 }
 
 function extractYouTubeId(url) {
