@@ -72,7 +72,7 @@ function renderQuestion(q) {
   updateScorePill('p-score-pill', myScore);
   el('p-q-text').textContent = q.text;
   el('p-status').textContent = '';
-  renderMedia(q.media);
+  renderMedia(q.media, q.roundType);
 
   const grid = el('p-options-grid');
   grid.innerHTML = '';
@@ -111,7 +111,7 @@ function startTimerBar(timeLimit, startedAt) {
   }, 100);
 }
 
-function renderMedia(media) {
+function renderMedia(media, roundType) {
   const box = el('p-media-box');
   box.innerHTML = '';
   if (!media) {
@@ -119,45 +119,71 @@ function renderMedia(media) {
     return;
   }
   box.style.display = '';
+
+  // On music rounds, players should hear the clip but never see the track
+  // title/artist — Spotify and Amazon Music widgets show that text as part
+  // of their UI, and YouTube can reveal it on pause. So the real player is
+  // rendered off-screen (still playing audio) and a blind "now playing"
+  // animation is shown instead. Film rounds keep the visual clip, since
+  // seeing it is the point.
+  const blind = roundType === 'music';
+  const playerHolder = document.createElement('div');
+  if (blind) {
+    playerHolder.style.position = 'absolute';
+    playerHolder.style.width = '1px';
+    playerHolder.style.height = '1px';
+    playerHolder.style.overflow = 'hidden';
+    playerHolder.style.opacity = '0.01';
+  }
+
+  let mediaEl = null;
   if (media.type === 'youtube') {
     const id = extractYouTubeId(media.url);
     const start = media.start || 0;
-    const iframe = document.createElement('iframe');
-    iframe.width = '100%';
-    iframe.height = '220';
-    iframe.src = `https://www.youtube.com/embed/${id}?start=${start}&autoplay=1`;
-    iframe.frameBorder = '0';
-    iframe.allow = 'autoplay; encrypted-media';
-    iframe.allowFullscreen = true;
-    box.appendChild(iframe);
+    mediaEl = document.createElement('iframe');
+    mediaEl.width = '100%';
+    mediaEl.height = '220';
+    mediaEl.src = `https://www.youtube.com/embed/${id}?start=${start}&autoplay=1`;
+    mediaEl.frameBorder = '0';
+    mediaEl.allow = 'autoplay; encrypted-media';
+    mediaEl.allowFullscreen = true;
   } else if (media.type === 'spotify') {
-    const iframe = document.createElement('iframe');
-    iframe.width = '100%';
-    iframe.height = '152';
-    iframe.src = extractSpotifyEmbedUrl(media.url);
-    iframe.frameBorder = '0';
-    iframe.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
-    box.appendChild(iframe);
+    mediaEl = document.createElement('iframe');
+    mediaEl.width = '100%';
+    mediaEl.height = '152';
+    mediaEl.src = extractSpotifyEmbedUrl(media.url);
+    mediaEl.frameBorder = '0';
+    mediaEl.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
   } else if (media.type === 'amazon') {
-    const iframe = document.createElement('iframe');
-    iframe.width = '100%';
-    iframe.height = '300';
-    iframe.src = media.url;
-    iframe.frameBorder = '0';
-    iframe.style.border = '1px solid rgba(0,0,0,0.12)';
-    box.appendChild(iframe);
+    mediaEl = document.createElement('iframe');
+    mediaEl.width = '100%';
+    mediaEl.height = '300';
+    mediaEl.src = media.url;
+    mediaEl.frameBorder = '0';
+    mediaEl.style.border = '1px solid rgba(0,0,0,0.12)';
   } else if (media.type === 'audio') {
-    const audio = document.createElement('audio');
-    audio.src = media.url;
-    audio.controls = true;
-    audio.autoplay = true;
-    box.appendChild(audio);
+    mediaEl = document.createElement('audio');
+    mediaEl.src = media.url;
+    mediaEl.controls = !blind;
+    mediaEl.autoplay = true;
   } else if (media.type === 'video') {
-    const video = document.createElement('video');
-    video.src = media.url;
-    video.controls = true;
-    video.autoplay = true;
-    box.appendChild(video);
+    mediaEl = document.createElement('video');
+    mediaEl.src = media.url;
+    mediaEl.controls = true;
+    mediaEl.autoplay = true;
+    mediaEl.width = '100%';
+  }
+
+  if (mediaEl) playerHolder.appendChild(mediaEl);
+  box.appendChild(playerHolder);
+
+  if (blind) {
+    const placeholder = document.createElement('div');
+    placeholder.className = 'now-playing';
+    placeholder.innerHTML = `
+      <div class="eq"><span></span><span></span><span></span><span></span></div>
+      <div class="muted" style="margin-top:12px;">Listen carefully…</div>`;
+    box.appendChild(placeholder);
   }
 }
 
